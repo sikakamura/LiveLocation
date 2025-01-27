@@ -1,0 +1,69 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Link for map live user  -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+    crossorigin=""/>
+     <!-- Make sure you put this AFTER Leaflet's CSS -->
+ <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+ integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+ crossorigin=""></script>
+    <!-- Link for map live user  -->
+    <title>Map Live User</title>
+    <style>
+        #map { height: 350px; }
+    </style>
+</head>
+<body>
+        <h1>Map Live User Location </h1>
+        <div id="map"></div>
+</body>
+<script>
+    var map = L.map('map').setView([51.505, -0.09], 13);
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19,
+    attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+}).addTo(map);
+
+let marker,circle,zoomed;
+
+// Create this function for showing live location of user
+const success = (pos) =>{
+    const lat = pos.coords.latitude;
+    const lng = pos.coords.longitude;
+    const accuracy = pos.coords.accuracy;
+
+    if(marker){
+        map.removeLayer(marker);
+        map.removeLayer(circle);
+    }
+
+    // Create this a marker for mark user location 
+    marker = L.marker([lat, lng]).addTo(map);
+    // Circle is for cirlce around the user location 
+    circle = L.circle([lat, lng],{radius: accuracy}).addTo(map);
+
+    
+    if(!zoomed){
+        // This line use for follow live location of user
+        zoomed = map.fitBounds(circle.getBounds());
+    }
+    
+    // Use this to follow the map of using in zoom a little 
+    map.setView([lat, lng]);
+}
+
+// this function use for handling error 
+const error = (err) =>{
+    // if(err.code === 1){
+    //     alert("Please allow geolocation access");
+    // }else{
+    //     alert("Cannot get current location");
+    // }
+}
+
+navigator.geolocation.watchPosition(success, error);
+</script>
+</html>
